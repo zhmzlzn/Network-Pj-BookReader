@@ -1,5 +1,12 @@
-# python-BookReader
-Network course final project  
+# Network-Pj-BookReader
+Network Course Final Project  
+
+## 题目说明
+**简单的小说阅读器的设计**
+
+- 服务器端保存小说文本（txt格式的即可）
+- 客户可以打开对应的文本，翻页，翻章，跳页，书签，下载，关闭等
+- 建议最好有图形界面，因为是txt格式，所谓的“页”可以通过规定每次内容包含的字节来规定
 
 ## 结构
 1. protocol 协议
