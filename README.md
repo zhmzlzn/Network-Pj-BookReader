@@ -11,10 +11,14 @@ Network Course Final Project
 ## 环境
 - python 3.7
 
-
 ## 结构
 1. protocol 协议
-    - 这里面是我们写的类http协议，是对数据的进一步封装和加密。
+    - `secure` AES加密层
+        - `cryptogram.py` 生成密码
+        - `secure_channel.py` 使用生成的密码建立安全通道用于数据传输
+    - `utils` 
+        - `__init__` ?
+        - `read_config.py` 阅读config.json
 
 2. client 客户端
     - `forms` 界面
