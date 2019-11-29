@@ -7,6 +7,7 @@ from pprint import pprint
 from protocol.utils import long_to_bytes
 import enum
 from struct import pack, unpack
+from protocol import message_type
 
 # 每个序列化片段的格式：
 # |--VAR_TYPE(1 Byte)--|--DATA_LEN(4 Bytes)--|--DATA--|

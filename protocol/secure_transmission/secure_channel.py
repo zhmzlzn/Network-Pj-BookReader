@@ -12,9 +12,11 @@ from Crypto.Cipher import AES # AES为加密算法
 
 from protocol.utils.read_config import get_config # 读取config.json的内容
 from protocol.secure import cryptogram # 加载密码生成文件
-'''from common.message import serialize_message, deserialize_message, ByteArrayReader'''
 from protocol.util import long_to_bytes
+from protocol.data_conversion.from_byte import ByteArrayReader, deserialize_message
+from protocol.data_conversion.to_byte import serialize_message
 from pprint import pprint
+
 
 
 # Format of message transmitted through Secure Channel
@@ -28,7 +30,7 @@ class SecureChannel:
         self.shared_secret = shared_secret
         return
 
-    def send(self, message_type, parameters=None):
+    def send_data(self, message_type, parameters=None):
         """加密message_type的数据parameters并发送"""
         iv1 = bytes(os.urandom(16)) # 有os随机生成一个byte格式的Initialization Vector(IV)
         data_to_encrypt = serialize_message(message_type, parameters) # 将各个类型的数据按照规定的转化格式转化为bytes
@@ -55,7 +57,7 @@ class SecureChannel:
         """数据解密，即解密收到的data_array"""
         # 用select循环socket.recv，当收到一个完整的数据块后（收到后length_of_encrypted_message+1+16个字节后）
         # 把 bytes([padding_n]) + iv1 + encrypted_message 传给本函数
-        br = ByteArrayReader(data_array)
+        br = ByteArrayReader(data_array) # 定义一个byte解读器
 
         # pprint(['recv', 'first_4_bytes', first_4_bytes, length_of_encrypted_message])
         padding_n = br.read(1)[0] # 解读出补位数
@@ -75,6 +77,52 @@ class SecureChannel:
         # pprint(['recv', 'decrypted_data', decrypted_data])
 
         return deserialize_message(decrypted_data)
+
+    def require_file(self, message_type, filename):
+        """要求从服务器获得名为filename的文件"""
+        send_data(message_type, filename)
+        FILEINFO_SIZE = struct.calcsize('????')
+        try:
+            fhead = on_data(sock.recv(FILEINFO_SIZE))
+            filesize = fhead['parameters']
+            with open(filename,'wb') as f: # 创建这个文件
+                ressize = filesize # 剩下要接收的大小
+                while True:
+                    if ressize>1024:
+                        filedata = on_data(sock.recv(1024))['parameters']
+                    else:
+                        filedata = on_data(sock.recv(ressize))['parameters']
+                        f.write(filedata)
+                        break
+                    if not filedata:
+                        break
+                    f.write(filedata)
+                    ressize = ressize - len(filedata)
+                    if ressize <0:
+                        break
+            print ('文件传输成功!')
+        except Exception as e:
+            print (e)
+            print ('文件传输失败!')
+        return
+
+    def send_file(self):
+        """加密发送客户端请求的文件"""
+        filename = on_data(connect.recv(1024))['parameters'] # 解码得到数据
+        #str = message.split('\n')
+        files = os.listdir() # files为当前目录下的文件列表
+        while True:
+            if filename in files: # 如果这个文件在列表里
+                break
+        # 传输分为两个部分，先传输文件头，再传输文件的内容
+        send(file_check, os.stat(filename).st_size)
+        
+        with open(filename,'rb') as f:
+                while True:
+                    filedata = f.read(1024)
+                    if not filedata:
+                        break
+                    connect.send(filedata)
 
     def close(self):
         """关闭socket"""

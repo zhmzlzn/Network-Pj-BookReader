@@ -7,7 +7,7 @@ from pprint import pprint
 from protocol.utils import long_to_bytes
 import enum
 from struct import pack, unpack
-
+from protocol import message_type
 
 # 每个序列化片段的格式：
 # |--VAR_TYPE(1 Byte)--|--DATA_LEN(4 Bytes)--|--DATA--|
@@ -15,7 +15,6 @@ from struct import pack, unpack
 # |-- 4 Byte messageType --|-- Array of parameters --|
 # for each item in array of params
 # |-- 1 Byte Type of params --|-- 4 Bytes Length of body --|-- N Byte Body--|
-
 
 VAR_TYPE = {
     1: 'int',
@@ -41,7 +40,7 @@ def _deserialize_float(bytes):
 
 
 def _deserialize_str(bytes):
-    return bytes.decode()
+    return bytes.decode('utf-8')
 
 
 def _deserialize_bytes(body):
@@ -100,3 +99,22 @@ def deserialize_message(data):
     ret['parameters'] = _deserialize_any(byte_reader.read_to_end())
 
     return ret
+
+class ByteArrayReader:
+    """Byte阅读器"""
+    def __init__(self, byte_array):
+        self.byte_array = byte_array
+        self.pointer = 0
+
+    def read(self, length):
+        buffer = self.byte_array[self.pointer: self.pointer + length]
+        self.pointer += length
+        return buffer
+
+    def read_to_end(self):
+        buffer = self.byte_array[self.pointer: len(self.byte_array)]
+        self.pointer = len(self.byte_array)
+        return buffer
+
+    def empty(self):
+        return len(self.byte_array) == self.pointer
