@@ -3,7 +3,6 @@ Network Course Final Project
 
 ## TODO
 - 加密与发送的接口没有解决
-- 
 
 
 ## 题目说明
@@ -18,14 +17,10 @@ Network Course Final Project
 
 ## 代码结构
 1. protocol 协议
-    - `1-data` 数据传输
-        - `byte_reader.py` 
-        - `from_byte.py` 各种类型数据编码为byte格式
-        - `to_byte.py` byte格式数据解码为本来的数据
-    - `1-file` 文件传输
-        - `require_file` 客户端发送文件请求并接收文件
-        - `send_file` 服务器接收请求并发送被要求的文件
-    - `2-secure` AES加密层
+    - `data_conversion` 原始数据与byte转换
+        - `from_byte.py` byte格式数据解码为本来的数据
+        - `to_byte.py` 各种类型数据编码为byte格式
+    - `secure_transmission` 加密传输
         - `cryptogram.py` 生成密码
         - `secure_channel.py` 使用生成的密码建立安全通道用于数据传输
     - `utils` 
