@@ -57,6 +57,6 @@ Network Course Final Project
 
 ### 加密算法
 crypto库 AES的CBC加密
-![CBC加密](Picture\CBC_encryption.svg.png)
+![CBC加密](.\Picture\CBC_encryption.svg.png)
 
-![CBC解密](Picture\CBC_decryption.svg.png)
+![CBC解密](.\Picture\CBC_decryption.svg.png)
