@@ -18,12 +18,18 @@ from protocol.data_conversion.to_byte import serialize_message
 from pprint import pprint
 
 
-
 # Format of message transmitted through Secure Channel
 # |--Length of Message Body(4Bytes)--|--Length of AES padding (1Byte)--|--AES IV (16Bytes)--|--Message Body (CSON)--|
 
 class SecureChannel:
-    """下面定义了secure channel建立后可以提供的操作"""
+    """
+    下面定义了secure channel建立后可以提供的操作。
+    作为最高层次的封装，其应该提供发送（原数据加密+socket发送）和接收（socket接收+数据解密）；
+    其提供的发送和接收应该取代socket的发送和接收，应该和下面的封装没有牵扯。
+    args: 
+        socket 用于传输
+        shared_secret 安全通道的共享密钥
+    """
     def __init__(self, socket, shared_secret):
         socket.setblocking(False) # 参数为False表示设置socket为非阻塞方式，不会等待信息
         self.socket = socket
@@ -31,32 +37,61 @@ class SecureChannel:
         return
 
     def send_data(self, message_type, parameters=None):
-        """加密message_type的数据parameters并发送"""
-        iv1 = bytes(os.urandom(16)) # 有os随机生成一个byte格式的Initialization Vector(IV)
+        """
+        加密message_type的数据parameters并发送
+        """
+        iv = bytes(os.urandom(16)) # 有os随机生成一个byte格式的Initialization Vector(IV)
+        # 这里默认发送的一条数据应当是由 数据类型开头 + 数据本身 组成
         data_to_encrypt = serialize_message(message_type, parameters) # 将各个类型的数据按照规定的转化格式转化为bytes
         length_of_message = len(data_to_encrypt) # 转化为byte后的长度
         padding_n = math.ceil(length_of_message / 16) * 16 - length_of_message # ceil向上取整；计算需要填补的空位数
         for i in range(0, padding_n):
             data_to_encrypt += b'\0'
 
-        encryption_suite = AES.new(self.shared_secret, AES.MODE_CBC, iv1) # AES.CBC加密器
+        encryption_suite = AES.new(self.shared_secret, AES.MODE_CBC, iv) # AES.CBC加密器
         encrypted_message = encryption_suite.encrypt(data_to_encrypt) # 加密
         length_of_encrypted_message = len(encrypted_message) # 加密后总大小
 
-        # pprint([length_of_encrypted_message,
-        #         struct.pack('L', length_of_encrypted_message), bytes([padding_n]), iv1, encrypted_message])
-        # pprint(['sending', self.socket, message_type, parameters])
-
         # 这里最终还是用socket发送，但是还是封装了一个头部，并且后面的主要信息（encrypted_message）已被加密
         self.socket.send(
-            struct.pack('!L', length_of_encrypted_message) + bytes([padding_n]) + iv1 + encrypted_message)
+            struct.pack('!L', length_of_encrypted_message) + bytes([padding_n]) + iv + encrypted_message)
             # 👆 pack格式：!L + 信息长度 + padding长度 + IV + 信息
         return
 
-    def on_data(self, data_array):
-        """数据解密，即解密收到的data_array"""
+    def receive_data(self, size):
+        """
+        数据解密，即解密收到的data_array
+        arg:
+            size 要接收的大小
+        ret：
+            返回接收到数据转化为的字典，内容为message_type和内容
+        """
+        data_array = self.socket.recv(size)
         # 用select循环socket.recv，当收到一个完整的数据块后（收到后length_of_encrypted_message+1+16个字节后）
-        # 把 bytes([padding_n]) + iv1 + encrypted_message 传给本函数
+        # 把 bytes([padding_n]) + iv + encrypted_message 传给本函数
+        br = ByteArrayReader(data_array) # 定义一个byte解读器
+
+        padding_n = br.read(1)[0] # 解读出补位数
+
+        iv = br.read(16) # 读出IV（解密需要的部分）
+        bytes_received = 0
+        data = br.read_to_end()
+
+        decryption_suite = AES.new(self.shared_secret, AES.MODE_CBC, iv) # AES.CBC解密器
+        decrypted_data = decryption_suite.decrypt(data) # 解密
+
+        if padding_n != 0:
+            decrypted_data = decrypted_data[0:-padding_n] # 扔掉补为的部分
+
+        return deserialize_message(decrypted_data)
+
+    '''
+    def on_data(self, data_array):
+        """
+        数据解密，即解密收到的data_array
+        """
+        # 用select循环socket.recv，当收到一个完整的数据块后（收到后length_of_encrypted_message+1+16个字节后）
+        # 把 bytes([padding_n]) + iv + encrypted_message 传给本函数
         br = ByteArrayReader(data_array) # 定义一个byte解读器
 
         # pprint(['recv', 'first_4_bytes', first_4_bytes, length_of_encrypted_message])
@@ -77,6 +112,7 @@ class SecureChannel:
         # pprint(['recv', 'decrypted_data', decrypted_data])
 
         return deserialize_message(decrypted_data)
+    '''
 
     def require_file(self, message_type, filename):
         """要求从服务器获得名为filename的文件"""
@@ -130,7 +166,9 @@ class SecureChannel:
 
 
 def establish_secure_channel_to_server():
-    """客户端建立安全通道"""
+    """
+    客户端建立安全通道
+    """
     config = get_config() # config里面存放了密钥和连接的地址，端口
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -152,7 +190,9 @@ def establish_secure_channel_to_server():
 
 
 def accept_client_to_secure_channel(socket):
-    """服务器建立安全通道"""
+    """
+    服务器建立安全通道
+    """
     conn, addr = socket.accept() # 这里仍然使用socket接收
 
     # 首次连接，接收客户端发来的密钥
