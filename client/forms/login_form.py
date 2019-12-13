@@ -5,12 +5,12 @@ from protocol.message_type import MessageType
 import _thread
 from tkinter import *
 from tkinter import Toplevel
-
+from protocol.secure_transmission.secure_channel import SecureChannel
+from protocol.data_conversion.from_byte import *
 import client.memory
 from client.forms.register_form import RegisterForm
 from client.forms.bookshelf_form import BookshelfForm
-import select
-import client.util.socket_listener
+
 
 
 class LoginForm(tk.Frame):
@@ -47,15 +47,8 @@ class LoginForm(tk.Frame):
         self.pack()
         self.master.title("👉Jack的阅读器👈")
 
-
-    def remove_socket_listener_and_close(self):
-        client.util.socket_listener.remove_listener(self.socket_listener)
-        self.master.destroy()
-
-    def destroy_window(self):
-        client.memory.tk_root.destroy()
-
     def do_login(self):
+        """使用账号和密码登陆"""
         username = self.username.get()
         password = self.password.get()
         if not username:
@@ -65,9 +58,13 @@ class LoginForm(tk.Frame):
             messagebox.showerror("出错了！", "密码不能为空")
             return
 
+        # 发送登陆消息
         self.sc.send(MessageType.login, [username, password])
 
-    def socket_listener(self, data):
+        # 接收服务器反馈
+        byte_data = self.sc.recv(1024)
+        data = deserialize_message(byte_data)
+
         """处理点击登陆收到的信息"""
         # 登陆失败
         if data['type'] == MessageType.login_failed:
@@ -88,3 +85,6 @@ class LoginForm(tk.Frame):
     def show_register(self):
         register_form = Toplevel()
         RegisterForm(register_form)
+
+    def destroy_window(self):
+        client.memory.tk_root.destroy()

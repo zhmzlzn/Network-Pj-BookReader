@@ -22,7 +22,7 @@ def init_client():
         exit(1)
 
     # 建立新线程来执行socket_listener_thread函数，后面为给这个函数的参数
-    _thread.start_new_thread(client.util.socket_listener.socket_listener_thread, (client.memory.sc, root))
+    #_thread.start_new_thread(client.util.socket_listener.socket_listener_thread, (client.memory.sc, root))
 
     login = tk.Toplevel() # 建立顶级独立窗口
     LoginForm(master=login) 
