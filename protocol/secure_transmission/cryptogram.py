@@ -1,3 +1,6 @@
+"""
+生成密钥
+"""
 from random import randint
 
 from protocol.secure.read_config import get_config

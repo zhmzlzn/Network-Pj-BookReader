@@ -1,10 +1,6 @@
 # Network-Pj-BookReader
 Network Course Final Project  
 
-## TODO
-- 
-
-
 ## 题目说明
 **简单的小说阅读器的设计**
 

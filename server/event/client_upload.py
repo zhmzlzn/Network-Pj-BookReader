@@ -5,14 +5,14 @@ import operator
 import os
 import struct
 
-def upload(connect):
+def upload(socket):
     """
     客户端上传
     """
     FILEINFO_SIZE = struct.calcsize('128sI')
     try:
         #获取打包好的文件信息，并解包
-        fhead = connect.recv(FILEINFO_SIZE)
+        fhead = socket.recv(FILEINFO_SIZE)
         filename , filesize = struct.unpack('128sI',fhead)
         filename = filename.decode().strip('\00')
         #文件名必须去掉\00，否则会报错，此处为接收文件
@@ -20,9 +20,9 @@ def upload(connect):
             ressize = filesize
             while True:
                 if ressize>1024:
-                    filedata = connect.recv(1024)
+                    filedata = socket.recv(1024)
                 else:
-                    filedata = connect.recv(ressize)
+                    filedata = socket.recv(ressize)
                     f.write(filedata)
                     break
                 if not filedata:

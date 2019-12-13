@@ -36,7 +36,7 @@ class SecureChannel:
         self.shared_secret = shared_secret
         return
 
-    def send_data(self, message_type, parameters=None):
+    def send(self, message_type, parameters=None):
         """
         加密message_type的数据parameters并发送
         """
@@ -58,13 +58,13 @@ class SecureChannel:
             # 👆 pack格式：!L + 信息长度 + padding长度 + IV + 信息
         return
 
-    def receive_data(self, size):
+    def recv(self, size):
         """
         数据解密，即解密收到的data_array
         arg:
             size 要接收的大小
         ret：
-            返回接收到数据转化为的字典，内容为message_type和内容
+            解密后的内容（仍需要调用deserialize_message转化）
         """
         data_array = self.socket.recv(size)
         # 用select循环socket.recv，当收到一个完整的数据块后（收到后length_of_encrypted_message+1+16个字节后）
@@ -83,9 +83,9 @@ class SecureChannel:
         if padding_n != 0:
             decrypted_data = decrypted_data[0:-padding_n] # 扔掉补为的部分
 
-        return deserialize_message(decrypted_data)
+        return decrypted_data
 
-    '''
+    
     def on_data(self, data_array):
         """
         数据解密，即解密收到的data_array
@@ -112,7 +112,7 @@ class SecureChannel:
         # pprint(['recv', 'decrypted_data', decrypted_data])
 
         return deserialize_message(decrypted_data)
-    '''
+    
 
     def require_file(self, message_type, filename):
         """要求从服务器获得名为filename的文件"""

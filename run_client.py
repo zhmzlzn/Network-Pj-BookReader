@@ -1,2 +1,2 @@
 import client
-client.run()
+client.init_client()

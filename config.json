@@ -5,10 +5,10 @@
   },
   "client": {
     "server_ip": "127.0.0.1",
-    "server_port": 8111
+    "server_port": 8998
   },
   "server": {
-    "bind_ip": "0.0.0.0",
-    "bind_port": 8111
+    "bind_ip": "127.0.0.1",
+    "bind_port": 8998
   }
 }
