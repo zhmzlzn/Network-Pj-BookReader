@@ -10,14 +10,12 @@ import select
 from protocol.utils.read_config import get_config
 from protocol.secure_transmission.secure_channel import accept_client_to_secure_channel
 from protocol.data_conversion.from_byte import deserialize_message
+from protocol.message_type import MessageType
 
-from server.event_handler import handle_event
+from server.event import handle_event
 from server.memory import *
 import server.memory
-from common.message import MessageType
-from server.broadcast import broadcast
 
-from server.util import database
 from pprint import pprint
 
 
@@ -36,8 +34,8 @@ def init_server():
     print("Server listening on " + config['server']['bind_ip'] + ":" + str(config['server']['bind_port']))
 
     # 三个字典
-    bytes_to_receive = {}
-    bytes_received = {}
+    bytes_to_receive = {} # 要接收的包
+    bytes_received = {} # 已接收的包
     data_buffer = {}
 
     while True:
@@ -64,7 +62,7 @@ def init_server():
                 conn_ok = True
                 first_4_bytes = ''
                 try:
-                    first_4_bytes = sc.socket.recv(4)
+                    first_4_bytes = sc.recv(4) # 接收4bytes，内容是message的长度
                 except ConnectionError:
                     conn_ok = False
 
@@ -73,16 +71,16 @@ def init_server():
 
                 if not conn_ok:
                     sc.close()
-
                     # 把他的连接信息移除
                     remove_sc_from_socket_mapping(sc)
 
                 else:
                     data_buffer[sc] = bytes()
+                    # 要接收的长度为
                     bytes_to_receive[sc] = struct.unpack('!L', first_4_bytes)[0] + 16 + 1
 
             buffer = sc.recv(bytes_to_receive[sc] - bytes_received[sc])
-            data_buffer[sc] += buffer
+            data_buffer[sc] += buffer # 接收后放到buffer里
             bytes_received[sc] += len(buffer)
 
             if bytes_received[sc] == bytes_to_receive[sc] and bytes_received[sc] != 0:
@@ -92,7 +90,7 @@ def init_server():
                 try:
                     data = deserialize_message(data_buffer[sc])
                     # 这里我们得到了一个来自客户端的请求，现在需要判断是什么请求来调用相应的函数相应
-                    #调用event文件夹__init__.py文件中的函数，识别message_type并调用对应的函数
+                    # 调用event文件夹__init__.py文件中的函数，识别message_type并调用对应的函数
                     handle_event(sc, data['type'], data['parameters'])
                 except:
                     pprint(sys.exc_info())

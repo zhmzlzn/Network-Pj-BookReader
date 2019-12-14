@@ -1,2 +1,2 @@
 import server
-server.run()
+server.init_server()

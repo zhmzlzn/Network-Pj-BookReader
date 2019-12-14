@@ -2,9 +2,8 @@
 生成密钥
 """
 from random import randint
-
-from protocol.secure.read_config import get_config
-from protocol.util import long_to_bytes
+from protocol.utils.read_config import get_config
+from protocol.utils import long_to_bytes
 import hashlib
 
 def is_prime(num, test_count):

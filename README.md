@@ -46,6 +46,14 @@ Network Course Final Project
 ## 封装说明
 因为需要传输电子书（txt文件）和状态，用户名，评论等非文件数据，所以我们提供两种传输方式——文件传输（file）和数据传输（data），针对这两种数据分别进行封装。在数据封装之上再提供一层加密封装。
 
+我们对每个数据都做了封装
+- 个体数据的封装结构为：
+`|-- Type of params (1 Byte) --|-- Length of body (4 Bytes) --|-- Body--|`
+- 一条信息的封装结构为：
+`|-- Length of Message Body (4 Bytes) --|-- Length of AES padding (1 Byte) --|-- AES IV (16 Bytes) --|-- Message Body (CSON) --|`
+
+在server的`__init__.py`文件中，首先获得4 Bytes的信息长度，再对其进行接收。
+
 ## 注释
 ### encode与pack
 如果希望使用socket传输数据，那么需要将各种数据类型转化为byte类型（txt文件传输似乎不需要，因为本身就是`encode('utf-8')`了的string）。为了实现这一转化我们调用了各种各样的函数：

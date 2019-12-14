@@ -7,7 +7,7 @@ import struct
 
 from protocol.secure_transmission import secure_channel
 
-def download(socket):
+def run(socket):
     """
     客户端下载
     """

@@ -5,7 +5,7 @@ import operator
 import os
 import struct
 
-def upload(socket):
+def run(socket):
     """
     客户端上传
     """

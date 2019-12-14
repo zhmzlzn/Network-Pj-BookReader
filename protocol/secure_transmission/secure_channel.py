@@ -11,8 +11,8 @@ import struct
 from Crypto.Cipher import AES # AES为加密算法
 
 from protocol.utils.read_config import get_config # 读取config.json的内容
-from protocol.secure import cryptogram # 加载密码生成文件
-from protocol.util import long_to_bytes
+from protocol.secure_transmission import cryptogram # 加载密码生成文件
+from protocol.utils import long_to_bytes
 from protocol.data_conversion.from_byte import ByteArrayReader, deserialize_message
 from protocol.data_conversion.to_byte import serialize_message
 from pprint import pprint

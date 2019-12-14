@@ -10,7 +10,7 @@ from struct import pack, unpack
 from protocol import message_type
 
 # 每个序列化片段的格式：
-# |--VAR_TYPE(1 Byte)--|--DATA_LEN(4 Bytes)--|--DATA--|
+# |-- 1 Byte 参数类型 --|-- 4 Bytes 长度 --|-- 传输的信息 --|
 
 # |-- 4 Byte messageType --|-- Array of parameters --|
 # for each item in array of params
@@ -83,7 +83,7 @@ _serialize_by_type = [None, _serialize_int, _serialize_float, _serialize_str, _s
 def _serialize_any(obj):
     if obj is None:
         return bytearray([0])
-    type_byte = VAR_TYPE_INVERSE[type(obj).__name__]
+    type_byte = VAR_TYPE_INVERSE[type(obj).__name__] # 首先判断是哪个类型，再调用相应的函数
     return _serialize_by_type[type_byte](obj)
 
 

@@ -11,19 +11,18 @@ import client.memory
 from client.forms.register_form import RegisterForm
 from client.forms.bookshelf_form import BookshelfForm
 
-
-
 class LoginForm(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        master.resizable(width=False, height=False)
-        master.geometry('300x100')
-        self.creatForm()
+        self.createForm()
         self.sc = client.memory.sc
-        client.util.socket_listener.add_listener(self.socket_listener)
 
-    def creatForm(self):
+    def createForm(self):
+        self.master.resizable(width=False, height=False)
+        self.master.geometry('300x100')        
+        self.master.title("👉Jack的阅读器👈")
+
         self.label_1 = Label(self, text="用户名")
         self.label_2 = Label(self, text="密码")
 
@@ -32,6 +31,7 @@ class LoginForm(tk.Frame):
 
         self.label_1.grid(row=0, sticky=E)
         self.label_2.grid(row=1, sticky=E)
+
         self.username.grid(row=0, column=1, pady=(10, 6))
         self.password.grid(row=1, column=1, pady=(0, 6))
 
@@ -45,7 +45,6 @@ class LoginForm(tk.Frame):
         self.registerbtn.grid(row=0, column=1)
 
         self.pack()
-        self.master.title("👉Jack的阅读器👈")
 
     def do_login(self):
         """使用账号和密码登陆"""
@@ -68,13 +67,12 @@ class LoginForm(tk.Frame):
         """处理点击登陆收到的信息"""
         # 登陆失败
         if data['type'] == MessageType.login_failed:
-            messagebox.showerror('登陆失败QAQ', '登陆失败，请检查用户名密码')
+            messagebox.showerror('登陆失败', '用户名或密码错误！')
             return
 
         # 登陆成功
         if data['type'] == MessageType.login_successful:
-            client.memory.current_user = data['parameters'] # 服务器发送的data的参数是用户名
-            self.remove_socket_listener_and_close()
+            client.memory.current_user = username 
 
             # 打开书架窗口（书籍列表）
             bookshelf = Toplevel(client.memory.tk_root, takefocus=True)
