@@ -5,6 +5,7 @@ from tkinter import messagebox
 from tkinter import *
 from protocol.secure_transmission.secure_channel import establish_secure_channel_to_server
 from protocol.message_type import MessageType
+from protocol.data_conversion.from_byte import deserialize_message
 from client.memory import current_user
 import client.memory
 
@@ -55,14 +56,18 @@ class BookshelfForm(tk.Frame):
             messagebox.showerror("出错了", "两次密码输入不一致")
             return
 
-        self.sc.send(MessageType.register, [username, password, nickname])
-        byte_data = self.sc.recv(1024)
-        data = deserialize_message(byte_data)
+        self.sc.send_message(MessageType.register, [username, password, nickname])
+        # 接收服务器反馈
+        message = self.sc.client_recv()
+        if not message:
+            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
+            self.destroy_window()
+            return
 
-        if data['type'] == MessageType.username_taken:
+        if message['type'] == MessageType.username_taken:
             messagebox.showerror('出错了', '用户名已被使用，请换一个')
             return
 
-        if data['type'] == MessageType.register_successful:
+        if message['type'] == MessageType.register_successful:
             messagebox.showinfo('注册成功', '恭喜，注册成功！')
             return

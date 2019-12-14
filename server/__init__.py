@@ -62,7 +62,7 @@ def init_server():
                 conn_ok = True
                 first_4_bytes = ''
                 try:
-                    first_4_bytes = sc.recv(4) # 接收4bytes，内容是message的长度
+                    first_4_bytes = sc.socket.recv(4) # 接收4bytes，内容是message的长度
                 except ConnectionError:
                     conn_ok = False
 
@@ -77,21 +77,24 @@ def init_server():
                 else:
                     data_buffer[sc] = bytes()
                     # 要接收的长度为
-                    bytes_to_receive[sc] = struct.unpack('!L', first_4_bytes)[0] + 16 + 1
-
-            buffer = sc.recv(bytes_to_receive[sc] - bytes_received[sc])
+                    bytes_to_receive[sc] = struct.unpack('!L', first_4_bytes)[0]
+                    print('发现新消息，准备开始接收,大小为{}'.format(bytes_to_receive[sc] - bytes_received[sc]))
+            buffer = sc.socket.recv(bytes_to_receive[sc] - bytes_received[sc])
             data_buffer[sc] += buffer # 接收后放到buffer里
             bytes_received[sc] += len(buffer)
 
             if bytes_received[sc] == bytes_to_receive[sc] and bytes_received[sc] != 0:
                 # 当一个数据包接收完毕
+                print('接收完毕！')
                 bytes_to_receive[sc] = 0
                 bytes_received[sc] = 0
                 try:
-                    data = deserialize_message(data_buffer[sc])
+                    data = sc.decrypt_data(data_buffer[sc])
+                    message = deserialize_message(data)
+                    print('成功收到客户端发来的一条消息')
                     # 这里我们得到了一个来自客户端的请求，现在需要判断是什么请求来调用相应的函数相应
                     # 调用event文件夹__init__.py文件中的函数，识别message_type并调用对应的函数
-                    handle_event(sc, data['type'], data['parameters'])
+                    handle_event(sc, message['type'], message['parameters'])
                 except:
                     pprint(sys.exc_info())
                     traceback.print_exc(file=sys.stdout)

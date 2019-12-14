@@ -16,7 +16,7 @@ Network Course Final Project
 
 所以服务器需要维护：用户名单，包含信息有用户名，密码，阅读过小说的书签（打开一本就加一个，打开书的时候遍历这个列表）。服务器不维护书籍表，在传的时候直接遍历books把文件名传过去。如果要实现评论的话直接弄一个review.txt，要是有书有评论就给他在里面整个评论表。
 
-实现时最理想的状态是建立`secure channel`后，不管啥子操作，客户端发的还是服务器发的，都完全经过这个通道。这个通道应当是一个完整的封装，不和应该和下面的封装混杂。
+secure channel只负责共享密钥、加密、解密。针对message的封装和解码让一个单独的函数去做，对file的封装和解码也让一个单独的函数去做，secure channel接收的就是单纯的一串bytes，不管是从哪来的。这样就把加密，解密和封装独立开了。
 
 ## 代码结构
 1. protocol 协议
@@ -53,6 +53,8 @@ Network Course Final Project
 `|-- Length of Message Body (4 Bytes) --|-- Length of AES padding (1 Byte) --|-- AES IV (16 Bytes) --|-- Message Body (CSON) --|`
 
 在server的`__init__.py`文件中，首先获得4 Bytes的信息长度，再对其进行接收。
+
+我非常希望能将send和recv两个函数全都封装到secure channel中，这样将变得很省事。但是事实上越集成的函数灵活性越差，在接收方面，我们需要很高的灵活性，比如接收不同类型的message，使用不同的接受方法和处理，这都迫使我们不能把接收放到一个函数里面去，而是需要使用socket和secure channel结合的方式。
 
 ## 注释
 ### encode与pack

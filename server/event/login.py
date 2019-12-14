@@ -11,8 +11,9 @@ def run(sc, parameters):
         for user in users:
             user = user.split(' ')
             if parameters[0] == user[0] and parameters[1] == user[1]: # 用户名和密码正确
-                sc.send(MessageType.login_successful)
+                sc.send_message(MessageType.login_successful)
+                print('用户名和密码正确，已发送登陆成功消息')
                 return
 
-    sc.send(MessageType.login_failed)
+    sc.send_message(MessageType.login_failed)
     return

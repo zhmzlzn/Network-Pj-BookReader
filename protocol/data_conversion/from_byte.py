@@ -7,7 +7,7 @@ from pprint import pprint
 from protocol.utils import long_to_bytes
 import enum
 from struct import pack, unpack
-from protocol import message_type
+from protocol.message_type import MessageType
 
 # 每个序列化片段的格式：
 # |--VAR_TYPE(1 Byte)--|--DATA_LEN(4 Bytes)--|--DATA--|
@@ -15,6 +15,9 @@ from protocol import message_type
 # |-- 4 Byte messageType --|-- Array of parameters --|
 # for each item in array of params
 # |-- 1 Byte Type of params --|-- 4 Bytes Length of body --|-- N Byte Body--|
+
+def _get_message_type_from_value(value):
+    return MessageType(value)
 
 VAR_TYPE = {
     1: 'int',

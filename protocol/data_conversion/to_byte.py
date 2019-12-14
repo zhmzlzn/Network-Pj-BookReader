@@ -87,7 +87,7 @@ def _serialize_any(obj):
     return _serialize_by_type[type_byte](obj)
 
 
-def serialize_message(message_type, parameters):
+def serialize_message(message_type, parameters=None):
     """将message_type和message本身转化为byte合并返回"""
     result = bytes([message_type.value])
     result += _serialize_any(parameters)

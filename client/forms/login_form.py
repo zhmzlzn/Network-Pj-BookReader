@@ -21,7 +21,7 @@ class LoginForm(tk.Frame):
     def createForm(self):
         self.master.resizable(width=False, height=False)
         self.master.geometry('300x100')        
-        self.master.title("👉Jack的阅读器👈")
+        self.master.title("Jack的阅读器")
 
         self.label_1 = Label(self, text="用户名")
         self.label_2 = Label(self, text="密码")
@@ -58,22 +58,27 @@ class LoginForm(tk.Frame):
             return
 
         # 发送登陆消息
-        self.sc.send(MessageType.login, [username, password])
+        self.sc.send_message(MessageType.login, [username, password])
+        print('已发送请求登陆的消息')
 
         # 接收服务器反馈
-        byte_data = self.sc.recv(1024)
-        data = deserialize_message(byte_data)
+        #message = self.sc.socket.recv(1024)
+        message = self.sc.client_recv()
+        if not message:
+            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
+            self.destroy_window()
+            return
 
         """处理点击登陆收到的信息"""
         # 登陆失败
-        if data['type'] == MessageType.login_failed:
+        if message['type'] == MessageType.login_failed:
             messagebox.showerror('登陆失败', '用户名或密码错误！')
             return
 
         # 登陆成功
-        if data['type'] == MessageType.login_successful:
+        if message['type'] == MessageType.login_successful:
             client.memory.current_user = username 
-
+            print('登陆成功')
             # 打开书架窗口（书籍列表）
             bookshelf = Toplevel(client.memory.tk_root, takefocus=True)
             BookshelfForm(bookshelf)
