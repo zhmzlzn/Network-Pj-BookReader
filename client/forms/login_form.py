@@ -82,12 +82,12 @@ class LoginForm(tk.Frame):
             # 打开书架窗口（书籍列表）
             bookshelf = Toplevel(client.memory.tk_root, takefocus=True)
             BookshelfForm(bookshelf)
-
             return
 
     def show_register(self):
         register_form = Toplevel()
-        RegisterForm(register_form)
+        RegisterForm(master=register_form)
 
     def destroy_window(self):
+        """因为root被withdraw掉了，所以只能通过memory里记住，然后调用这个函数来关掉"""
         client.memory.tk_root.destroy()

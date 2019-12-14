@@ -14,7 +14,8 @@ class RegisterForm(tk.Frame):
         super().__init__(master)
         self.master = master
         self.createForm()
-        self.sc = client.memory.sc        
+        self.sc = client.memory.sc
+        master.protocol("WM_DELETE_WINDOW", self.remove_socket_listener_and_close)    
 
     def createForm(self):
         self.master.resizable(width=False, height=False)
@@ -40,7 +41,7 @@ class RegisterForm(tk.Frame):
         self.regbtn = Button(self, text="注册", command=self.do_register)
         self.regbtn.grid(row=4, column=0, columnspan=2)
 
-        self.pack()        
+        self.pack()
 
     def do_register(self):
         username = self.username.get()
@@ -61,7 +62,6 @@ class RegisterForm(tk.Frame):
         message = self.sc.client_recv()
         if not message:
             messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
-            self.destroy_window()
             return
 
         if message['type'] == MessageType.username_taken:
@@ -70,4 +70,5 @@ class RegisterForm(tk.Frame):
 
         if message['type'] == MessageType.register_successful:
             messagebox.showinfo('注册成功', '恭喜，注册成功！')
+            self.master.destroy()
             return
