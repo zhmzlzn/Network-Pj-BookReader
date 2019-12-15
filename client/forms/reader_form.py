@@ -14,7 +14,6 @@ class ReaderForm(tk.Frame):
         self.sc = client.memory.sc
         self.n = 0 # 当前所在页数
         self.createForm()
-        master.protocol("WM_DELETE_WINDOW", self.destroy_window)
 
     def createForm(self):
         self.master.title("Jack的阅读器")
@@ -35,8 +34,6 @@ class ReaderForm(tk.Frame):
 
         self.buttonframe = Frame(self)
         self.buttonframe.pack(side=BOTTOM, fill=BOTH, expand=YES)
-        self.backbtn = Button(self.buttonframe, text="返回", command=self.back)
-        self.backbtn.pack(side=LEFT, fill=X, expand=YES)
         self.prebtn = Button(self.buttonframe, text="上一页", command=self.previous_page)
         self.prebtn.pack(side=LEFT, fill=X, expand=YES)
         self.nxtbtn = Button(self.buttonframe, text="下一页", command=self.next_page)
@@ -59,11 +56,6 @@ class ReaderForm(tk.Frame):
             self.text.insert(1.0, message['parameters'])
         else:
             messagebox.showerror('请求失败','请求失败，服务器未返回书签页！')
-        return
-
-    def back(self):
-        """选择书籍"""
-
         return
 
     def previous_page(self):
@@ -104,7 +96,4 @@ class ReaderForm(tk.Frame):
         else:
             messagebox.showerror('请求失败','请求失败，服务器未返回下一页！')
         return
-
-    def destroy_window(self):
-        """因为root被withdraw掉了，所以只能通过memory里记住，然后调用这个函数来关掉"""
-        client.memory.tk_root.destroy()
+        
