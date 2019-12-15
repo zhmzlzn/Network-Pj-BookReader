@@ -94,6 +94,7 @@ def init_server():
                     print('成功收到客户端发来的一条消息')
                     # 这里我们得到了一个来自客户端的请求，现在需要判断是什么请求来调用相应的函数相应
                     # 调用event文件夹__init__.py文件中的函数，识别message_type并调用对应的函数
+                    print(message['type'])
                     handle_event(sc, message['type'], message['parameters'])
                 except:
                     pprint(sys.exc_info())

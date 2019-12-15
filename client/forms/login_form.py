@@ -1,10 +1,8 @@
 import _tkinter
 import tkinter as tk
-from tkinter import messagebox
-from protocol.message_type import MessageType
 import _thread
 from tkinter import *
-from tkinter import Toplevel
+from protocol.message_type import MessageType
 from protocol.secure_transmission.secure_channel import SecureChannel
 from protocol.data_conversion.from_byte import *
 import client.memory
@@ -17,11 +15,12 @@ class LoginForm(tk.Frame):
         self.master = master
         self.createForm()
         self.sc = client.memory.sc
+        master.protocol("WM_DELETE_WINDOW", self.destroy_window)
 
     def createForm(self):
         self.master.resizable(width=False, height=False)
         self.master.geometry('300x100')        
-        self.master.title("Jack的阅读器")
+        self.master.title("Jack的阅读器-登陆")
 
         self.label_1 = Label(self, text="用户名")
         self.label_2 = Label(self, text="密码")
@@ -62,8 +61,7 @@ class LoginForm(tk.Frame):
         print('已发送请求登陆的消息')
 
         # 接收服务器反馈
-        #message = self.sc.socket.recv(1024)
-        message = self.sc.client_recv()
+        message = self.sc.recv_message()
         if not message:
             messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
             self.destroy_window()
@@ -79,6 +77,7 @@ class LoginForm(tk.Frame):
         if message['type'] == MessageType.login_successful:
             client.memory.current_user = username 
             print('登陆成功')
+            self.master.destroy()
             # 打开书架窗口（书籍列表）
             bookshelf = Toplevel(client.memory.tk_root, takefocus=True)
             BookshelfForm(bookshelf)

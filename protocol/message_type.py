@@ -7,21 +7,20 @@ class MessageType(enum.IntEnum):
     login = 1
     # [username, password]
     register = 2
-    client_echo = 3
-    # username:str
-    require_book = 4    
-    require_comment = 5
-    comment = 6
-    bad = 7
+    require_list = 3
+    read = 4
+    download = 5
+    view_comment = 6
+    comment = 7
+    bad = 8
+    client_echo = 9
 
     # === Server Action 101-200
-    login_successful = 100
-    register_successful = 101
-    server_echo = 103
-    send_check = 104
-    sending_file = 105
-    last_send = 106
-
+    login_successful = 101
+    register_successful = 102
+    book_list = 103
+    send_page = 104
+    file_size = 105
 
     # === Failure 201-300
     login_failed = 201

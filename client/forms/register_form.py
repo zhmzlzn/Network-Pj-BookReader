@@ -20,7 +20,7 @@ class RegisterForm(tk.Frame):
     def createForm(self):
         self.master.resizable(width=False, height=False)
         self.master.geometry('300x140')
-        self.master.title("注册")
+        self.master.title("Jack的阅读器-注册")
 
         self.label_1 = Label(self, text="用户名")
         self.label_2 = Label(self, text="密码")
@@ -59,7 +59,7 @@ class RegisterForm(tk.Frame):
 
         self.sc.send_message(MessageType.register, [username, password])
         # 接收服务器反馈
-        message = self.sc.client_recv()
+        message = self.sc.recv_message()
         if not message:
             messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
             return
