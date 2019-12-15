@@ -1,13 +1,12 @@
-import select
 import tkinter as tk
 from tkinter import *
 from tkinter.filedialog import askdirectory # 选择路径
 from protocol.secure_transmission.secure_channel import establish_secure_channel_to_server
 from protocol.message_type import MessageType
 from protocol.data_conversion.from_byte import deserialize_message
+from client.forms.reader_form import ReaderForm
 from client.memory import current_user
 import client.memory
-from client.components.vertical_scrolled_frame import VerticalScrolledFrame
 
 class BookshelfForm(tk.Frame):
     def __init__(self, master=None):
@@ -69,10 +68,9 @@ class BookshelfForm(tk.Frame):
     def read(self):
         """选择阅读小说"""
         bkname = self.booklist.get(self.booklist.curselection()) # 得到选择的小说名
-
-
-        message = self.sc
-        
+        #self.master.destroy()
+        reader = Toplevel(client.memory.tk_root, takefocus=True)
+        ReaderForm(bkname, reader)
         return
 
     def download(self):

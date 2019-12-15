@@ -16,7 +16,7 @@ from protocol.message_type import MessageType
 # for each item in array of params
 # |-- 1 Byte Type of params --|-- 4 Bytes Length of body --|-- N Byte Body--|
 
-def _get_message_type_from_value(value):
+def get_message_type_from_value(value):
     return MessageType(value)
 
 VAR_TYPE = {
@@ -97,7 +97,7 @@ def _deserialize_any(bytes):
 def deserialize_message(data):
     ret = {}
     byte_reader = ByteArrayReader(data)
-    ret['type'] = _get_message_type_from_value(byte_reader.read(1)[0])
+    ret['type'] = get_message_type_from_value(byte_reader.read(1)[0])
 
     ret['parameters'] = _deserialize_any(byte_reader.read_to_end())
 

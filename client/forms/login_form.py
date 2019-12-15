@@ -1,4 +1,3 @@
-import _tkinter
 import tkinter as tk
 import _thread
 from tkinter import *

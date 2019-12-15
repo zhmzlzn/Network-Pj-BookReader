@@ -13,7 +13,7 @@ from Crypto.Cipher import AES # AES为加密算法
 from protocol.utils.read_config import get_config # 读取config.json的内容
 from protocol.secure_transmission import cryptogram # 加载密码生成文件
 from protocol.utils import long_to_bytes
-from protocol.data_conversion.from_byte import ByteArrayReader, deserialize_message
+from protocol.data_conversion.from_byte import *
 from protocol.data_conversion.to_byte import serialize_message
 from protocol.message_type import MessageType
 from pprint import pprint
@@ -118,6 +118,61 @@ class SecureChannel:
             if bytes_received == bytes_to_receive:
                 data = self.decrypt_data(data_buffer)        
                 message = deserialize_message(data)
+                return message
+
+    def send_page(self, parameters=None):
+        """
+        发送书的一页
+        调用encrypt_data函数加密 👉 计算出总长度，加到信息最前面 👉 发送
+
+        其实就是没有转化为bytes这一过程的send_message
+        """
+        mtype = bytes([MessageType.send_page.value])
+        data_to_encrypt = mtype + parameters
+
+        encrypted_message = self.encrypt_data(data_to_encrypt)
+        length_of_encrypted_message = len(encrypted_message)
+        self.socket.send(struct.pack('!L', length_of_encrypted_message) + encrypted_message)  
+        print('已发送一页')
+        return        
+
+    def recv_page(self):
+        """
+        客户端接收书的一页
+        识别长度，完全接收 👉 调用decrypt_data函数解密 👉 返回结果
+
+        其实就是没有转化为bytes这一过程的recv_message
+        """
+        bytes_to_receive = 0
+        bytes_received = 0
+        while True:
+            if bytes_to_receive == 0 and bytes_received == 0:
+                conn_ok = True
+                first_4_bytes = ''
+                try:
+                    first_4_bytes = self.socket.recv(4) # 接收4bytes，内容是message的长度
+                except ConnectionError:
+                    conn_ok = False
+                if first_4_bytes == "" or len(first_4_bytes) < 4:
+                    conn_ok = False
+                if not conn_ok:
+                    print('连接失败！')
+                    return False
+                data_buffer = bytes()
+                bytes_to_receive = struct.unpack('!L', first_4_bytes)[0]
+
+            buffer = self.socket.recv(bytes_to_receive - bytes_received)
+            data_buffer += buffer
+            bytes_received += len(buffer)
+
+            if bytes_received == bytes_to_receive:
+                data = self.decrypt_data(data_buffer)
+
+                message = {}
+                byte_reader = ByteArrayReader(data)
+                message['type'] = get_message_type_from_value(byte_reader.read(1)[0])
+                message['parameters'] = byte_reader.read_to_end()
+                
                 return message
 
     def send_file(self, file_path):
