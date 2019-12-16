@@ -13,6 +13,9 @@ Network Course Final Project
 - tkinter
 - Crypto
 
+## 运行
+开两个终端，一个执行`python run_server.py`运行服务器，一个执行`python run_client.py`运行客户端。一个服务器可以同时支持多个客户端。
+
 ## 实现思路
 实现书签功能意味着肯定是要登陆的，而且每个用户需要维护一个书签表。整个书不能是简单的书，应该有划分的形式。这个对书的划分应该在服务器端完成，阅读时客户端不维护整本书，所看的每一页都需要让服务器发送来。体现小客户端大服务器的思想。页通过规定传送的字节来规定，能算则算，尽量不储存。用户书签可以统一放到用户信息文件夹下面，当用户打开一本书时，查找该用户信息里有没有这本书，如果有则加载书签，默认打开上次阅读的位置。
 
@@ -66,6 +69,7 @@ Network Course Final Project
 整个协议全部定义在`protocol`文件夹中，协议的核心代码位于`secure_channel.py`文件。我们发送的信息共有三个类型——消息（message）、页面（page）和文件（file）
 
 1. 消息（message）
+
 原始数据 👉 转化为bytes（第一层封装） 👉 数据加密（第二层封装） 👉 最终发送的数据
 - 第一层封装的结构为：
 `A = |-- Type of Data (1 Byte) --|-- Length of Data (4 Bytes) --|-- Data --|`
@@ -73,11 +77,13 @@ Network Course Final Project
 `B = |-- Length of Message Body (4 Bytes) --|-- Length of AES Padding (1 Byte) --|-- AES IV (16 Bytes) --|-- A --|`
 
 2. 页面（page）
+
 原始数据 👉 数据加密 👉 最终发送的数据
 - 封装结构为：
 `|-- Length of Message Body (4 Bytes) --|-- Length of AES Padding (1 Byte) --|-- AES IV (16 Bytes) --|-- Page --|`
 
 3. 文件（file）
+
 原始数据 👉 数据加密（由于规定了每次传输的大小，所以加密封装时不再封装总大小） 👉 最终发送的数据
 - 封装结构为：
 `|-- Length of AES Padding (1 Byte) --|-- AES IV (16 Bytes) --|-- One File's Part --|`
