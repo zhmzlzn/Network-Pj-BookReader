@@ -1,5 +1,3 @@
-import select
-import _tkinter
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import *
@@ -48,13 +46,13 @@ class RegisterForm(tk.Frame):
         password = self.password.get()
         password_confirmation = self.password_confirmation.get()
         if not username:
-            messagebox.showerror("出错了", "用户名不能为空")
+            messagebox.showerror("出错了", "用户名不能为空！")
             return
         if not password:
-            messagebox.showerror("出错了", "密码不能为空")
+            messagebox.showerror("出错了", "密码不能为空！")
             return
         if password != password_confirmation:
-            messagebox.showerror("出错了", "两次密码输入不一致")
+            messagebox.showerror("出错了", "两次密码输入不一致，请重新输入！")
             return
 
         self.sc.send_message(MessageType.register, [username, password])

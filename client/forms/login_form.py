@@ -1,6 +1,6 @@
 import tkinter as tk
-import _thread
 from tkinter import *
+from tkinter import messagebox
 from protocol.message_type import MessageType
 from protocol.secure_transmission.secure_channel import SecureChannel
 from protocol.data_conversion.from_byte import *

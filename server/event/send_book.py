@@ -8,7 +8,7 @@ def run(sc, parameters):
     for i in range(len(bklist)):
         bklist[i] = bklist[i].strip('.txt')
     if parameters not in bklist: # 如果这本书不在书籍列表里
-        print('错误！没有找到这本书！')
+        sc.send_message(MessageType.no_book)
         return
     sc.send_file('./server/books/' + parameters + '.txt') # 发送这本书
     return

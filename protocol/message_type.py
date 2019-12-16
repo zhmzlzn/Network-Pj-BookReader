@@ -3,9 +3,7 @@ import enum
 class MessageType(enum.IntEnum):
     """里面规定了各个信息类型对应的标号以及处理指令对应的标号"""
     # === Client Action 1-100
-    # [username, password]
     login = 1
-    # [username, password]
     register = 2
     require_list = 3
     download = 4
@@ -15,7 +13,6 @@ class MessageType(enum.IntEnum):
     update_bookmark = 8
     view_comment = 9
     comment = 10
-    bad = 11
 
     # === Server Action 101-200
     login_successful = 101
@@ -26,15 +23,10 @@ class MessageType(enum.IntEnum):
     bookmark = 106
 
     # === Failure 201-300
-    login_failed = 201
-    username_taken = 202
+    login_failed = 201 # 登陆失败
+    username_taken = 202 # 用户名被占用
     no_more_page = 203 # 当前页是最后一页
-    send_failed = 204
-    # err_msg:str
-    general_failure = 205
-    # msg:str
-    general_msg = 206
-
+    no_book = 204 # 查无此书
 
 def _get_message_type_from_value(value):
     return MessageType(value)

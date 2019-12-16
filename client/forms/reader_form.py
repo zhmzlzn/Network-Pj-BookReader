@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+from tkinter import messagebox
 from protocol.secure_transmission.secure_channel import establish_secure_channel_to_server
 from protocol.message_type import MessageType
 from protocol.data_conversion.from_byte import deserialize_message
@@ -56,11 +57,14 @@ class ReaderForm(tk.Frame):
             print('《{}》书签位于第{}页'.format(self.bkname, message['parameters']+1))
         else:
             print('未能成功接收到书签页数！错误：{}'.format(message['type']))
+            return
         
         #接收书签页
         message = self.sc.recv_page()
         if not message:
-            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')   
+            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
+        elif message['type'] == MessageType.no_book:
+            messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')
         elif message['type'] == MessageType.send_page:
             print('成功接收书签页')
             self.text.insert(1.0, message['parameters'].decode(encoding='gbk', errors='ignore'))
@@ -78,7 +82,9 @@ class ReaderForm(tk.Frame):
         self.sc.send_message(MessageType.pre_page, self.bkname + '*' + str(self.n))
         message = self.sc.recv_page()
         if not message:
-            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')   
+            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
+        elif message['type'] == MessageType.no_book:
+            messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')
         elif message['type'] == MessageType.send_page:
             print('成功接收第{}页'.format(self.n+1))
             self.page_label['text'] = str(self.n+1) # 更新页码
@@ -95,7 +101,9 @@ class ReaderForm(tk.Frame):
         self.sc.send_message(MessageType.nxt_page, self.bkname + '*' + str(self.n))
         message = self.sc.recv_page()
         if not message:
-            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')   
+            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
+        elif message['type'] == MessageType.no_book:
+            messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')  
         elif message['type'] == MessageType.no_more_page:
             messagebox.showwarning('警告！','已经是最后一页！')
         elif message['type'] == MessageType.send_page:

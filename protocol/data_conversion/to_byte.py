@@ -2,8 +2,6 @@
 类型转化函数，将'int'等类型封装转化为byte
 """
 import socket
-from pprint import pprint
-
 from protocol.utils import long_to_bytes
 import enum
 from struct import pack, unpack

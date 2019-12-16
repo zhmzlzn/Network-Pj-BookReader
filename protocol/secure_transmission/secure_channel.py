@@ -16,7 +16,6 @@ from protocol.utils import long_to_bytes
 from protocol.data_conversion.from_byte import *
 from protocol.data_conversion.to_byte import serialize_message
 from protocol.message_type import MessageType
-from pprint import pprint
 
 
 # Format of message transmitted through Secure Channel
@@ -51,7 +50,7 @@ class SecureChannel:
         #length_of_encrypted_message = len(encrypted_message) # 加密后总大小
 
         return bytes([padding_n]) + iv + encrypted_message
-            # 👆 pack格式：信息长度 + padding长度 + IV + 信息
+            # 👆 pack格式：padding长度 + IV + 信息
 
     def decrypt_data(self, data_array):
         """
@@ -85,7 +84,6 @@ class SecureChannel:
         encrypted_message = self.encrypt_data(data_to_encrypt)
         length_of_encrypted_message = len(encrypted_message)
         self.socket.send(struct.pack('!L', length_of_encrypted_message) + encrypted_message)  
-        print('已发送一条消息')
         return
 
     def recv_message(self):
@@ -177,7 +175,7 @@ class SecureChannel:
 
     def send_file(self, file_path):
         """服务器加密发送客户端请求的文件"""
-        # 传输分为两个部分，先传输文件头，再传输文件的内容
+        # 传输分为两个部分，先传输文件大小，再传输文件的内容
         self.send_message(MessageType.file_size, os.stat(file_path).st_size)
         
         with open(file_path,'rb') as f: # 以二进制只读模式打开
@@ -186,11 +184,17 @@ class SecureChannel:
                 if not filedata:
                     break
                 encrypted_message = self.encrypt_data(filedata) # 加密，加密后大小为1024
-                self.socket.send(encrypted_message) 
+                self.socket.send(encrypted_message)
+        
+        print('已发送文件')
+        return
 
     def recv_file(self, file_path):
         """客户端从服务器获得名为filename的文件"""
         message = self.recv_message()
+        if message['type'] == MessageType.no_book:
+            print('查无此书！')
+            return
         if message['type'] is not MessageType.file_size:
             print('未能获取文件大小，传输失败！')
             return

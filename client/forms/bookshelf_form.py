@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+from tkinter import messagebox
 from tkinter.filedialog import askdirectory # 选择路径
 from protocol.secure_transmission.secure_channel import establish_secure_channel_to_server
 from protocol.message_type import MessageType
@@ -26,13 +27,15 @@ class BookshelfForm(tk.Frame):
         self.booklist = Listbox(self)
         bklist = self.get_booklist() # 书籍列表
         for bkname in bklist:
-            self.booklist.insert("end", bkname)
+            self.booklist.insert(END, bkname)
         self.booklist.pack(side=RIGHT, fill=BOTH)
         
         self.sb.config(command=self.booklist.yview)
 
         self.buttonframe = Frame(self)
         self.buttonframe.pack(side=LEFT, fill=BOTH, expand=YES)
+        self.refreshbtn = Button(self.buttonframe, text="刷新", command=self.refresh)
+        self.refreshbtn.pack(side=TOP, fill=Y, expand=YES)
         self.readbtn = Button(self.buttonframe, text="阅读", command=self.read)
         self.readbtn.pack(side=TOP, fill=Y, expand=YES)
         self.dlbtn = Button(self.buttonframe, text="下载", command=self.download)
@@ -61,9 +64,16 @@ class BookshelfForm(tk.Frame):
             print('成功接收书籍列表')
             return message['parameters']
         else:
-            print(message['type'])
+            print('接收书籍列表失败，错误信息{}'.format(message['type']))
             messagebox.showerror('请求失败','请求失败，服务器未返回书籍列表！')
             return
+
+    def refresh(self):
+        """刷新书籍列表"""
+        self.booklist.delete(0, END)
+        bklist = self.get_booklist() # 书籍列表
+        for bkname in bklist:
+            self.booklist.insert(END, bkname)
 
     def read(self):
         """选择阅读小说"""

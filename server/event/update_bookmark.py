@@ -14,7 +14,6 @@ def run(sc, parameters):
     for i in range(len(bklist)):
         bklist[i] = bklist[i].strip('.txt')
     if bkname not in bklist: # 如果这本书不在书籍列表里
-        print('错误！没有找到这本书！')
         return
 
     # 修改书签

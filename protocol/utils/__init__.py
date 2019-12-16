@@ -1,7 +1,5 @@
 from binascii import unhexlify
 from hashlib import md5 as _md5
-from pprint import pprint
-
 
 def long_to_bytes(val, endianness='big'):
     """
@@ -16,7 +14,6 @@ def long_to_bytes(val, endianness='big'):
     s = b'\x00' if fmt % val == '0' else unhexlify(fmt % val)
 
     if endianness == 'little':
-        # see http://stackoverflow.com/a/931095/309233
         s = s[::-1]
 
     return s

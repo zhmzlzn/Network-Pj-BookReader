@@ -1,6 +1,6 @@
-import _thread # 基本线程和互斥锁支持
 import tkinter as tk
 from tkinter import *
+from tkinter import messagebox
 from protocol.secure_transmission.secure_channel import establish_secure_channel_to_server
 import client.memory
 from client.forms.login_form import LoginForm
