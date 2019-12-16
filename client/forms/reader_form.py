@@ -63,7 +63,7 @@ class ReaderForm(tk.Frame):
             messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')   
         elif message['type'] == MessageType.send_page:
             print('成功接收书签页')
-            self.text.insert(1.0, message['parameters'])
+            self.text.insert(1.0, message['parameters'].decode(encoding='gbk', errors='ignore'))
         else:
             messagebox.showerror('请求失败','请求失败，服务器未返回书签页！')
         return
@@ -83,7 +83,7 @@ class ReaderForm(tk.Frame):
             print('成功接收第{}页'.format(self.n+1))
             self.page_label['text'] = str(self.n+1) # 更新页码
             self.text.delete('1.0', 'end') # 清空text文本框
-            self.text.insert(1.0, message['parameters'])
+            self.text.insert(1.0, message['parameters'].decode(encoding='gbk', errors='ignore'))
         else:
             messagebox.showerror('请求失败','请求失败，服务器未返回上一页！')
         return
@@ -102,7 +102,7 @@ class ReaderForm(tk.Frame):
             print('成功接收第{}页'.format(self.n+1))
             self.page_label['text'] = str(self.n+1) # 更新页码
             self.text.delete('1.0', 'end') # 清空text文本框
-            self.text.insert(1.0, message['parameters'])
+            self.text.insert(1.0, message['parameters'].decode(encoding='gbk', errors='ignore'))
         else:
             messagebox.showerror('请求失败','请求失败，服务器未返回下一页！')
         return
