@@ -6,7 +6,6 @@ import server.event.start_read
 import server.event.pre_page
 import server.event.nxt_page
 import server.event.update_bookmark
-import server.event.comment
 from protocol.message_type import MessageType
 
 event_handler_map = {
@@ -18,7 +17,6 @@ event_handler_map = {
     MessageType.pre_page: pre_page,
     MessageType.nxt_page: nxt_page,
     MessageType.update_bookmark: update_bookmark,
-    MessageType.comment: comment,
 }
 
 def handle_event(sc, event_type, parameters):
