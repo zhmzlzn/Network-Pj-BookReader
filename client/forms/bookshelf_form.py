@@ -19,7 +19,6 @@ class BookshelfForm(tk.Frame):
 
     def createForm(self):
         self.master.title("Jack的书架")
-        #self.master.geometry('400x500')
 
         self.sb = Scrollbar(self)
         self.sb.pack(side=RIGHT, fill=Y)
@@ -40,10 +39,6 @@ class BookshelfForm(tk.Frame):
         self.readbtn.pack(side=TOP, fill=Y, expand=YES)
         self.dlbtn = Button(self.buttonframe, text="下载", command=self.download)
         self.dlbtn.pack(side=TOP, fill=Y, expand=YES)
-        #self.cmtbtn = Button(self.master, text="评论", command=self.make_comment)
-        #self.cmtbtn.pack()
-        #self.viewcmtbtn = Button(self.master, text="查看评论", command=self.view_comment)
-        #self.viewcmtbtn.pack()
 
         self.pack()
 

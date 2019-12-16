@@ -20,7 +20,6 @@ class ReaderForm(tk.Frame):
 
     def createForm(self):
         self.master.title("Jack的阅读器")
-        #self.master.geometry('400x500')
 
         self.sb = Scrollbar(self)
         self.sb.pack(side=RIGHT, fill=Y)
@@ -39,10 +38,6 @@ class ReaderForm(tk.Frame):
         self.page_label.pack(side=LEFT, fill=X, expand=YES)
         self.nxtbtn = Button(self.buttonframe, text="下一页", command=self.next_page)
         self.nxtbtn.pack(side=LEFT, fill=X, expand=YES)
-        #self.cmtbtn = Button(self.master, text="评论", command=self.make_comment)
-        #self.cmtbtn.pack()
-        #self.viewcmtbtn = Button(self.master, text="查看评论", command=self.view_comment)
-        #self.viewcmtbtn.pack()
 
         self.pack()
 

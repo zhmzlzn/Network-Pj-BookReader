@@ -1,9 +1,6 @@
 # Network-Pj-BookReader
 Network Course Final Project  
 
-## TODO
-- 评论功能
-
 ## 题目说明
 **简单的小说阅读器的设计**
 
@@ -86,21 +83,28 @@ Network Course Final Project
 `|-- Length of AES Padding (1 Byte) --|-- AES IV (16 Bytes) --|-- One File's Part --|`
 
 ## 注释
-### `secure_channel`详解
+### 1. `secure_channel`详解
 #### 加密解密模块
+
 `encrypt_data` 数据加密及加密信息封装（不包含计算信息总长度）
+
 `decrypt_data` 数据解密
 #### 发送消息
+
 `send_message` 发送消息，完成数据类型转化封装和发送封装
+
 `recv_message` 接收消息
 #### 发送页面
+
 `send_page` 发送一页，是没有数据类型转化的send_message
+
 `recv_page` 接受一页
 #### 发送文件
 `send_file` 发送一个txt文件，先发送文件总大小，后循环发送，也无需数据类型转化
+
 `recv_file` 循环接收一个文件
 
-### encode与pack
+### 2. encode与pack
 如果希望使用socket传输数据，那么需要将各种数据类型转化为byte类型（txt文件传输似乎不需要，因为本身就是`encode('utf-8')`了的string）。为了实现这一转化我们调用了各种各样的函数：
 >- str: `encode('utf-8')`; `decode('utf-8')`
 >- int: longtobyte
@@ -111,7 +115,7 @@ Network Course Final Project
 
 而如果我们想一口气传输多个（多种）类型的数据，那么就需要对这些数据进行打包，调用struct中的pack函数，所以实际上pack不起到转化为byte的作用，它只扮演了将多个数据打包的角色。
 
-### 加密算法
+### 3. 加密算法
 crypto库 AES的CBC加密
 
 ![CBC加密](./Picture/CBC_encryption.svg.png)
