@@ -5,6 +5,7 @@ import server.event.send_book
 import server.event.start_read
 import server.event.pre_page
 import server.event.nxt_page
+import server.event.update_bookmark
 import server.event.comment
 import server.event.bad
 from protocol.message_type import MessageType
@@ -17,6 +18,7 @@ event_handler_map = {
     MessageType.start_read: start_read,
     MessageType.pre_page: pre_page,
     MessageType.nxt_page: nxt_page,
+    MessageType.update_bookmark: update_bookmark,
     MessageType.comment: comment,
     MessageType.bad: bad,
 }

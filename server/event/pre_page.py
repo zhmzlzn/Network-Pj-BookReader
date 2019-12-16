@@ -16,7 +16,7 @@ def run(sc, parameters):
 
     with open('./server/books/' + bkname + '.txt', 'rb') as f: # 以二进制只读模式打开
         for i in range(n):
-            filedata = f.read(992)
-        filedata = f.read(992)
+            filedata = f.read(1900)
+        filedata = f.read(1900)
         sc.send_page(filedata)
     return

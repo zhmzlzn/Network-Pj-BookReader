@@ -9,7 +9,7 @@ def run(sc, parameters):
     with open('./server/users.txt', 'r', encoding='utf-8') as f:
         users = f.read().splitlines()
         for user in users:
-            user = user.split(' ')
+            user = user.split('|')
             if parameters[0] == user[0] and parameters[1] == user[1]: # 用户名和密码正确
                 sc.send_message(MessageType.login_successful)
                 print('用户名和密码正确，已发送登陆成功消息')

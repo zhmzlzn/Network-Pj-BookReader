@@ -3,7 +3,7 @@ Network Course Final Project
 
 ## TODO
 - 我发现socket.send的大小可以非常大，远不止1024，20000都可以。通过提升一次传输的大小来提高客户端下文件的效率。
-- 书签功能还没有做
+- text显示中文有问题
 - message_type里还有一些垃圾要清理
 - 还有一些print垃圾要清理
 

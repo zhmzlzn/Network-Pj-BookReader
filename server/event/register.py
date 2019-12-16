@@ -8,13 +8,13 @@ def run(sc, parameters):
     with open('./server/users.txt', 'r', encoding='utf-8') as f:
         users = f.read().splitlines()
         for user in users:
-            user = user.split(' ')
+            user = user.split('|')
             if parameters[0] == user[0]: # 用户名已被占用
                 sc.send_message(MessageType.username_taken)
                 return
 
     # 用户名未被占用，添加到用户列表最后
     with open('./server/users.txt', 'a+', encoding='utf-8') as f:
-        f.write(parameters[0] + ' ' + parameters[1] + '\n')
+        f.write(parameters[0] + '|' + parameters[1] + '\n')
     sc.send_message(MessageType.register_successful)
     return

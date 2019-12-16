@@ -12,9 +12,10 @@ class MessageType(enum.IntEnum):
     start_read = 5
     pre_page = 6
     nxt_page = 7
-    view_comment = 8
-    comment = 9
-    bad = 10
+    update_bookmark = 8
+    view_comment = 9
+    comment = 10
+    bad = 11
 
     # === Server Action 101-200
     login_successful = 101
@@ -22,6 +23,7 @@ class MessageType(enum.IntEnum):
     book_list = 103
     file_size = 104
     send_page = 105
+    bookmark = 106
 
     # === Failure 201-300
     login_failed = 201
