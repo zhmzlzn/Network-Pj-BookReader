@@ -13,7 +13,6 @@ class RegisterForm(tk.Frame):
         self.master = master
         self.createForm()
         self.sc = client.memory.sc
-        master.protocol("WM_DELETE_WINDOW", self.remove_socket_listener_and_close)    
 
     def createForm(self):
         self.master.resizable(width=False, height=False)

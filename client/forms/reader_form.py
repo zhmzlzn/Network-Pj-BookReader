@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
+from tkinter.simpledialog import askinteger
 from protocol.secure_transmission.secure_channel import establish_secure_channel_to_server
 from protocol.message_type import MessageType
 from protocol.data_conversion.from_byte import deserialize_message
@@ -15,6 +16,7 @@ class ReaderForm(tk.Frame):
         self.user = client.memory.current_user
         self.sc = client.memory.sc
         self.n = 0 # 当前所在页数
+        self.total = 0 # 当前书的总页数
         self.createForm()
         master.protocol("WM_DELETE_WINDOW", self.update_bookmark)
 
@@ -34,8 +36,8 @@ class ReaderForm(tk.Frame):
         self.buttonframe.pack(side=BOTTOM, fill=BOTH, expand=YES)
         self.prebtn = Button(self.buttonframe, text="上一页", command=self.previous_page)
         self.prebtn.pack(side=LEFT, fill=X, expand=YES)
-        self.page_label = Label(self.buttonframe, text=str(self.n+1))
-        self.page_label.pack(side=LEFT, fill=X, expand=YES)
+        self.pagebtn = Button(self.buttonframe, text=str(self.n+1) + '/' + str(self.total+1), command=self.jump_page)
+        self.pagebtn.pack(side=LEFT, fill=X, expand=YES)
         self.nxtbtn = Button(self.buttonframe, text="下一页", command=self.next_page)
         self.nxtbtn.pack(side=LEFT, fill=X, expand=YES)
 
@@ -53,6 +55,15 @@ class ReaderForm(tk.Frame):
         else:
             print('未能成功接收到书签页数！错误：{}'.format(message['type']))
             return
+
+        # 接收总页数
+        message = self.sc.recv_message()
+        if message['type'] == MessageType.total_page:
+            self.total = message['parameters']
+            print('《{}》共{}页'.format(self.bkname, message['parameters']+1))
+        else:
+            print('未能成功接收到总页数！错误：{}'.format(message['type']))
+            return
         
         #接收书签页
         message = self.sc.recv_page()
@@ -67,14 +78,10 @@ class ReaderForm(tk.Frame):
             messagebox.showerror('请求失败','请求失败，服务器未返回书签页！')
         return
 
-    def previous_page(self):
-        """上一页"""
-        if self.n == 0:
-            messagebox.showwarning('警告！','已经是第一页！')
-            return
-        self.n = self.n - 1
-        # 这里我们需要同时发送书名和当前页数，而send_message只能发送一种类型的数据，所以全部转化为str，用“*”分隔
-        self.sc.send_message(MessageType.pre_page, self.bkname + '*' + str(self.n))
+    def jump_page(self):
+        """跳转到某一页"""
+        self.n = askinteger('页面跳转', '要跳转的页数', initialvalue=self.n+1, maxvalue=self.total + 1, minvalue=1) - 1
+        self.sc.send_message(MessageType.require_page, self.bkname + '*' + str(self.n))
         message = self.sc.recv_page()
         if not message:
             messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
@@ -82,7 +89,29 @@ class ReaderForm(tk.Frame):
             messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')
         elif message['type'] == MessageType.send_page:
             print('成功接收第{}页'.format(self.n+1))
-            self.page_label['text'] = str(self.n+1) # 更新页码
+            self.pagebtn['text'] = str(self.n+1) + '/' + str(self.total+1) # 更新页码
+            self.text.delete('1.0', 'end') # 清空text文本框
+            self.text.insert(1.0, message['parameters'].decode(encoding='gbk', errors='ignore'))
+        else:
+            messagebox.showerror('请求失败','请求失败，服务器未返回该页！')
+        return        
+
+    def previous_page(self):
+        """上一页"""
+        if self.n == 0:
+            messagebox.showwarning('警告！','已经是第一页！')
+            return
+        self.n = self.n - 1
+        # 这里我们需要同时发送书名和当前页数，而send_message只能发送一种类型的数据，所以全部转化为str，用“*”分隔
+        self.sc.send_message(MessageType.require_page, self.bkname + '*' + str(self.n))
+        message = self.sc.recv_page()
+        if not message:
+            messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
+        elif message['type'] == MessageType.no_book:
+            messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')
+        elif message['type'] == MessageType.send_page:
+            print('成功接收第{}页'.format(self.n+1))
+            self.pagebtn['text'] = str(self.n+1) + '/' + str(self.total+1) # 更新页码
             self.text.delete('1.0', 'end') # 清空text文本框
             self.text.insert(1.0, message['parameters'].decode(encoding='gbk', errors='ignore'))
         else:
@@ -91,19 +120,20 @@ class ReaderForm(tk.Frame):
 
     def next_page(self):
         """下一页"""
+        if self.n == self.total:
+            messagebox.showwarning('警告！','已经是最后一页！')
+            return     
         self.n = self.n + 1
         # 这里我们需要同时发送书名和当前页数，而send_message只能发送一种类型的数据，所以全部转化为str，用“*”分隔
-        self.sc.send_message(MessageType.nxt_page, self.bkname + '*' + str(self.n))
+        self.sc.send_message(MessageType.require_page, self.bkname + '*' + str(self.n))
         message = self.sc.recv_page()
         if not message:
             messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
         elif message['type'] == MessageType.no_book:
             messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')  
-        elif message['type'] == MessageType.no_more_page:
-            messagebox.showwarning('警告！','已经是最后一页！')
         elif message['type'] == MessageType.send_page:
             print('成功接收第{}页'.format(self.n+1))
-            self.page_label['text'] = str(self.n+1) # 更新页码
+            self.pagebtn['text'] = str(self.n+1) + '/' + str(self.total+1) # 更新页码
             self.text.delete('1.0', 'end') # 清空text文本框
             self.text.insert(1.0, message['parameters'].decode(encoding='gbk', errors='ignore'))
         else:

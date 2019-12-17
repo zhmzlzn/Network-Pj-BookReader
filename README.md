@@ -29,7 +29,7 @@ Network Course Final Project
     - `secure_transmission` 加密传输
         - `cryptogram.py` 生成密码
         - `secure_channel.py` 使用生成的密码建立安全通道用于各类数据传输
-    - `utils` 
+    - `utils` 一些工具
         - `__init__` longtobyte转化int为byte；md5
         - `read_config.py` 阅读config.json
     - `message_type` 不同种类和含义的信息对应的数字
@@ -48,8 +48,7 @@ Network Course Final Project
     - `event` 存放应对各种请求的处理函数，一个处理函数放在一个文件中
         - `__init__.py` 为客户端不同的请求选择对应的处理函数
         - `login.py` 处理客户端登陆
-        - `nxt_page.py` 发送下一页
-        - `pre_page.py` 发送上一页
+        - `send_page.py` 发送指定书的指定页
         - `register.py` 处理客户端注册
         - `send_book.py` 发送整本书
         - `send_list.py` 发送书籍列表

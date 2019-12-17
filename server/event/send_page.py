@@ -2,6 +2,7 @@ import os
 from protocol.message_type import MessageType
 from protocol.secure_transmission.secure_channel import SecureChannel
 from server.memory import *
+from server.event.start_read import ONE_PAGE_WORDS
 
 def run(sc, parameters):
     info = parameters.split('*')
@@ -16,7 +17,7 @@ def run(sc, parameters):
 
     with open('./server/books/' + bkname + '.txt', 'rb') as f: # 以二进制只读模式打开
         for i in range(n):
-            filedata = f.read(1900)
-        filedata = f.read(1900)
+            filedata = f.read(ONE_PAGE_WORDS)
+        filedata = f.read(ONE_PAGE_WORDS)
         sc.send_page(filedata)
     return

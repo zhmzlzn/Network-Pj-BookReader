@@ -1,7 +1,10 @@
 import os
+import math
 from protocol.message_type import MessageType
 from protocol.secure_transmission.secure_channel import SecureChannel
 from server.memory import *
+
+ONE_PAGE_WORDS = 1900
 
 def run(sc, parameters):
     info = parameters.split('*')
@@ -29,11 +32,17 @@ def run(sc, parameters):
                 break
 
     sc.send_message(MessageType.bookmark, n) # 将书签所在页数发送给客户端
+    
+    # 计算总页数
+    with open('./server/books/' + bkname + '.txt', 'rb') as f: # 以二进制只读模式打开
+        contents = f.read()
+        total = math.ceil(len(contents) / ONE_PAGE_WORDS) - 1 # 这里-1是因为我们的页数默认从0开始
+    sc.send_message(MessageType.total_page, total) # 发送总页数
 
     # 发送书签页
     with open('./server/books/' + bkname + '.txt', 'rb') as f: # 以二进制只读模式打开
         for i in range(n):
-            filedata = f.read(1900)
-        filedata = f.read(1900)
+            filedata = f.read(ONE_PAGE_WORDS)
+        filedata = f.read(ONE_PAGE_WORDS)
         sc.send_page(filedata)
     return
