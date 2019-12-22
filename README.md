@@ -1,6 +1,10 @@
 # Network-Pj-BookReader
 Network Course Final Project  
 
+## TODO
+去掉send_page，改用send_message发送页，这样可以读取string，然后调用find函数来找到章节标记，可以写一个小函数来实现寻找第n个标记，同时在客户端维护第几章，要求章节时直接传过来，这样最简单。
+https://bbs.csdn.net/topics/390845664
+
 ## 题目说明
 **简单的小说阅读器的设计**
 
