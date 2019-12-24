@@ -1,10 +1,6 @@
 # Network-Pj-BookReader
 Network Course Final Project  
 
-## TODO
-去掉send_page，改用send_message发送页，这样可以读取string，然后调用find函数来找到章节标记，可以写一个小函数来实现寻找第n个标记，同时在客户端维护第几章，要求章节时直接传过来，这样最简单。
-https://bbs.csdn.net/topics/390845664
-
 ## 题目说明
 **简单的小说阅读器的设计**
 
@@ -79,13 +75,7 @@ https://bbs.csdn.net/topics/390845664
 - 第二层封装的结构为：
 `B = |-- Length of Message Body (4 Bytes) --|-- Length of AES Padding (1 Byte) --|-- AES IV (16 Bytes) --|-- A --|`
 
-2. 页面（page）
-
-原始数据 👉 数据加密 👉 最终发送的数据
-- 封装结构为：
-`|-- Length of Message Body (4 Bytes) --|-- Length of AES Padding (1 Byte) --|-- AES IV (16 Bytes) --|-- Page --|`
-
-3. 文件（file）
+2. 文件（file）
 
 原始数据 👉 数据加密（由于规定了每次传输的大小，所以加密封装时不再封装总大小） 👉 最终发送的数据
 - 封装结构为：
@@ -103,11 +93,7 @@ https://bbs.csdn.net/topics/390845664
 `send_message` 发送消息，完成数据类型转化封装和发送封装
 
 `recv_message` 接收消息
-#### 发送页面
 
-`send_page` 发送一页，是没有数据类型转化的send_message
-
-`recv_page` 接受一页
 #### 发送文件
 `send_file` 发送一个txt文件，先发送文件总大小，后循环发送，也无需数据类型转化
 
@@ -124,7 +110,14 @@ https://bbs.csdn.net/topics/390845664
 
 而如果我们想一口气传输多个（多种）类型的数据，那么就需要对这些数据进行打包，调用struct中的pack函数，所以实际上pack不起到转化为byte的作用，它只扮演了将多个数据打包的角色。
 
-### 3. 加密算法
+### 3. 页和章
+我们规定：
+
+在程序内部，页从0开始，总页数也从0开始计算，即实际页数-1；程序UI界面显示页数统一 +1
+
+在程序内部，章从0开始，总章数从0开始计算，即实际章数-1；程序UI界面不显示章的编号，直接显示章名
+
+### 4. 加密算法
 crypto库 AES的CBC加密
 
 ![CBC加密](./Picture/CBC_encryption.svg.png)
