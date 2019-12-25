@@ -10,8 +10,6 @@ class MessageType(enum.IntEnum):
     start_read = 5
     require_page = 6
     update_bookmark = 7
-    view_comment = 8
-    comment = 9
 
     # === Server Action 101-200
     login_successful = 101
@@ -19,8 +17,9 @@ class MessageType(enum.IntEnum):
     book_list = 103
     file_size = 104
     send_page = 105
-    bookmark = 106
-    total_page = 107
+    send_chapter = 106 # 发送章节列表
+    page_num = 107
+    total_page = 108
 
     # === Failure 201-300
     login_failed = 201 # 登陆失败

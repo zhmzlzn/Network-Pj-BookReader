@@ -23,11 +23,11 @@ class BookshelfForm(tk.Frame):
         self.sb = Scrollbar(self)
         self.sb.pack(side=RIGHT, fill=Y)
 
-        self.booklist = Listbox(self)
+        self.booklist = Listbox(self, height=15, width=30, yscrollcommand=self.sb.set)
         bklist = self.get_booklist() # 书籍列表
         for bkname in bklist:
             self.booklist.insert(END, bkname)
-        self.booklist.pack(side=RIGHT, fill=BOTH)
+        self.booklist.pack(side=RIGHT, fill=BOTH, expand=YES)
         
         self.sb.config(command=self.booklist.yview)
 
@@ -73,17 +73,18 @@ class BookshelfForm(tk.Frame):
     def read(self):
         """选择阅读小说"""
         bkname = self.booklist.get(self.booklist.curselection()) # 得到选择的小说名
-        #self.master.destroy()
         reader = Toplevel(client.memory.tk_root, takefocus=True)
         ReaderForm(bkname, reader)
         return
 
     def download(self):
         """选择下载小说"""
+        path = askdirectory()
+        if not path:
+            return
         bkname = self.booklist.get(self.booklist.curselection()) # 得到选择的小说名
         self.sc.send_message(MessageType.download, bkname) # 发送下载请求
-        print('正在请求下载《{}》……'.format(bkname))
-        path = askdirectory()
+        print('正在请求下载《{}》……'.format(bkname))        
         self.sc.recv_file(path + '/' + bkname + '.txt') # 若已有同名文件则会覆盖
         messagebox.showinfo('下载成功！','《{}》下载成功！'.format(bkname))
         print('《{}》下载成功！'.format(bkname))
