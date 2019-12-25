@@ -3,15 +3,14 @@ import math
 from protocol.message_type import MessageType
 from protocol.secure_transmission.secure_channel import SecureChannel
 from server.memory import *
-from server.event.utils import ONE_PAGE_WORDS, get_chapter, send_page
+from server.event.utils import ONE_PAGE_WORDS, send_page
 
 def run(sc, parameters):
     """
     发送流程：
         当前所处页数
-        当前所处章数
         总页数
-        总章数
+        章节列表
         页面
     """
     info = parameters.split('*')
@@ -38,14 +37,12 @@ def run(sc, parameters):
                     page_num = int(user[index+1])
                 break
     sc.send_message(MessageType.page_num, page_num) # 将书签所在页数发送给客户端
-    
-    # 当前章节
-    chap = get_chapter('./server/books/' + bkname + '.txt', page_num)
-    sc.send_message(MessageType.send_chapter, chap) # 发送书签所在章数
 
-    # 计算总页数和总章数
+    # 获得总页数和章节列表
     total_page = 0
-    total_chap = 0
+    chapter = []
+    chapter.append(['书名和作者', 0])
+    i = 1
     with open('./server/books/' + bkname + '.txt', 'r', encoding='utf-8') as f:
         line = f.readline()
         while line:
@@ -58,9 +55,10 @@ def run(sc, parameters):
                 s += line
                 line = f.readline()
             total_page += math.ceil(len(s) / ONE_PAGE_WORDS)
-            total_chap += 1
+            chapter.append([line[1:-1], total_page])
     sc.send_message(MessageType.total_page, total_page-1) # 发送总页数
-    sc.send_message(MessageType.total_chap, total_chap-1) # 发送总章数
+    sc.send_message(MessageType.send_chapter, chapter[:-1]) # 发送章数列表
+    print('已发送《{}》的章节列表'.format(bkname))
 
     # 发送书签页
     send_page(sc, './server/books/' + bkname + '.txt', page_num)

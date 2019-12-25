@@ -2,32 +2,6 @@ import math
 from protocol.message_type import MessageType
 ONE_PAGE_WORDS = 1000
 
-def get_chapter(book_path, page_num):
-    """通过书的页码来得到当前所在章节"""
-    old_page = 0
-    new_page = 0
-    chap = -1
-    with open(book_path, 'r', encoding='utf-8') as f:
-        line = f.readline()
-        if line:
-            if line[0] == '#':
-                chap += 1
-        while line: # 循环到没有内容了为止
-            s = ''
-            s += line
-            line = f.readline()
-            while line: # 循环到章节头停止
-                if line[0] == '#':
-                    break
-                s += line
-                line = f.readline()
-            old_page = new_page # 老一章开头的页数
-            new_page = new_page + math.ceil(len(s) / ONE_PAGE_WORDS) # 新一章开头的页数
-            if page_num >= old_page and page_num < new_page:
-                return chap
-            chap += 1 # 章节数 + 1
-    return chap
-
 def send_page(sc, book_path, page_num):
     """发送书的一页"""
     with open(book_path, 'r', encoding='utf-8') as f:

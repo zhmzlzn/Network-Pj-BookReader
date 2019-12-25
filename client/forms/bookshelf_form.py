@@ -73,7 +73,6 @@ class BookshelfForm(tk.Frame):
     def read(self):
         """选择阅读小说"""
         bkname = self.booklist.get(self.booklist.curselection()) # 得到选择的小说名
-        #self.master.destroy()
         reader = Toplevel(client.memory.tk_root, takefocus=True)
         ReaderForm(bkname, reader)
         return
