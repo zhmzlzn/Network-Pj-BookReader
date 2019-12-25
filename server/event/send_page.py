@@ -2,7 +2,7 @@ import os
 from protocol.message_type import MessageType
 from protocol.secure_transmission.secure_channel import SecureChannel
 from server.memory import *
-from server.event.utils import ONE_PAGE_WORDS, send_page
+from server.event.utils import send_page
 
 def run(sc, parameters):
     info = parameters.split('*')

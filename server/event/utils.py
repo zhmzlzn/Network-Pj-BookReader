@@ -1,10 +1,15 @@
 import math
 from protocol.message_type import MessageType
-ONE_PAGE_WORDS = 1000
+C_ONE_PAGE_WORDS = 1000
+E_ONE_PAGE_WORDS = 2500
 
 def send_page(sc, book_path, page_num):
     """发送书的一页"""
     with open(book_path, 'r', encoding='utf-8') as f:
+        if f.readline() == 'C\n':
+            page_words = C_ONE_PAGE_WORDS
+        else:
+            page_words = E_ONE_PAGE_WORDS
         num = 0
         j = 0
         line = f.readline()
@@ -18,16 +23,16 @@ def send_page(sc, book_path, page_num):
                         break
                     s += line
                     line = f.readline()
-            if num + math.ceil(len(s) / ONE_PAGE_WORDS) - 1 < page_num: # 读的页数不够
-                num += math.ceil(len(s) / ONE_PAGE_WORDS)
+            if num + math.ceil(len(s) / page_words) - 1 < page_num: # 读的页数不够
+                num += math.ceil(len(s) / page_words)
                 continue
-            elif num + math.ceil(len(s) / ONE_PAGE_WORDS) - 1 == page_num: # 读的页数正好
-                j = ONE_PAGE_WORDS * (math.ceil(len(s) / ONE_PAGE_WORDS) - 1)
-                num = num + math.ceil(len(s) / ONE_PAGE_WORDS)
+            elif num + math.ceil(len(s) / page_words) - 1 == page_num: # 读的页数正好
+                j = page_words * (math.ceil(len(s) / page_words) - 1)
+                num = num + math.ceil(len(s) / page_words)
             else: # 读的页数超了
-                j = ONE_PAGE_WORDS * (page_num - num)
+                j = page_words * (page_num - num)
                 num = page_num
                 break
-        sc.send_message(MessageType.send_page, s[j: j+ONE_PAGE_WORDS])
+        sc.send_message(MessageType.send_page, s[j: j+page_words])
         print('已发送第{}页'.format(page_num))
     return

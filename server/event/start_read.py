@@ -3,7 +3,7 @@ import math
 from protocol.message_type import MessageType
 from protocol.secure_transmission.secure_channel import SecureChannel
 from server.memory import *
-from server.event.utils import ONE_PAGE_WORDS, send_page
+from server.event.utils import C_ONE_PAGE_WORDS, E_ONE_PAGE_WORDS, send_page
 
 def run(sc, parameters):
     """
@@ -44,6 +44,10 @@ def run(sc, parameters):
     chapter.append(['书名和作者', 0])
     i = 1
     with open('./server/books/' + bkname + '.txt', 'r', encoding='utf-8') as f:
+        if f.readline() == 'C\n':
+            page_words = C_ONE_PAGE_WORDS
+        else:
+            page_words = E_ONE_PAGE_WORDS
         line = f.readline()
         while line:
             s = ''
@@ -54,7 +58,7 @@ def run(sc, parameters):
                     break
                 s += line
                 line = f.readline()
-            total_page += math.ceil(len(s) / ONE_PAGE_WORDS)
+            total_page += math.ceil(len(s) / page_words)
             chapter.append([line[1:-1], total_page])
     sc.send_message(MessageType.total_page, total_page-1) # 发送总页数
     sc.send_message(MessageType.send_chapter, chapter[:-1]) # 发送章数列表
