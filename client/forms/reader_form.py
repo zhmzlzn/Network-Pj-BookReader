@@ -30,14 +30,9 @@ class ReaderForm(tk.Frame):
         self.chapbtn = Button(self, command=self.jump_chapter)
         self.chapbtn.pack(side=TOP, fill=X, expand=YES)
 
-        self.sb = Scrollbar(self)
-        self.sb.pack(side=RIGHT, fill=Y)
-
-        self.text = Text(self)
+        self.text = Text(self, height=35)
         self.text.pack(side=TOP, fill=BOTH)
         self.start_read()
-
-        self.sb.config(command=self.text.yview)        
 
         self.buttonframe = Frame(self)
         self.buttonframe.pack(side=BOTTOM, fill=BOTH, expand=YES)
@@ -90,7 +85,6 @@ class ReaderForm(tk.Frame):
             self.total_chapter = len(self.chapter)
             self.chap_num = self.get_chapter()
             self.chapbtn['text'] = self.chapter[self.chap_num][0] # 更新要显示的章节名
-            print(self.chapter)
             print('《{}》共{}章'.format(self.bkname, self.total_chapter))
         else:
             print('未能成功接收到章节列表！错误：{}'.format(message['type']))
@@ -293,7 +287,7 @@ class ChapterList(tk.Toplevel):
         self.sb = Scrollbar(self)
         self.sb.pack(side=RIGHT, fill=Y)
 
-        self.chaplist = Listbox(self)
+        self.chaplist = Listbox(self, height=15, width=40, yscrollcommand=self.sb.set)
         for chap in self.chapter:
             self.chaplist.insert(END, chap[0])
         self.chaplist.pack(side=TOP, fill=BOTH)
