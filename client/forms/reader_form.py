@@ -65,8 +65,12 @@ class ReaderForm(tk.Frame):
         if message['type'] == MessageType.page_num:
             self.page_num = message['parameters']
             print('《{}》书签位于第{}页'.format(self.bkname, message['parameters']))
+        elif message['type'] == MessageType.no_book:
+            messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')
+            return
         else:
             print('未能成功接收到书签页数！错误：{}'.format(message['type']))
+            messagebox.showerror('请求失败', '未能成功接收到书签页数！错误：{}'.format(message['type']))
             return
 
         # 接收总页数
@@ -74,6 +78,9 @@ class ReaderForm(tk.Frame):
         if message['type'] == MessageType.total_page:
             self.total_page = message['parameters']
             print('《{}》共{}页'.format(self.bkname, message['parameters']))
+        elif message['type'] == MessageType.no_book:
+            messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')
+            return
         else:
             print('未能成功接收到总页数！错误：{}'.format(message['type']))
             return
@@ -86,6 +93,9 @@ class ReaderForm(tk.Frame):
             self.chap_num = self.get_chapter()
             self.chapbtn['text'] = self.chapter[self.chap_num][0] # 更新要显示的章节名
             print('《{}》共{}章'.format(self.bkname, self.total_chapter))
+        elif message['type'] == MessageType.no_book:
+            messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')
+            return
         else:
             print('未能成功接收到章节列表！错误：{}'.format(message['type']))
             return
@@ -96,6 +106,7 @@ class ReaderForm(tk.Frame):
             messagebox.showerror('连接失败', 'QAQ 网络出现了问题，请稍后再试~')
         elif message['type'] == MessageType.no_book:
             messagebox.showerror('请求失败', '查无此书，请返回刷新书籍列表！')
+            return
         elif message['type'] == MessageType.send_page:
             print('成功接收书签页')
             if message['parameters'][0] == '#':

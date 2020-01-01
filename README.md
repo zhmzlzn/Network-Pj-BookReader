@@ -85,7 +85,7 @@ Network Course Final Project
 
 
 ## 协议说明
-整个协议全部定义在`protocol`文件夹中，协议的核心代码位于`secure_channel.py`文件。我们发送的信息共有三个类型——消息（message）、页面（page）和文件（file）
+整个协议全部定义在`protocol`文件夹中，协议的核心代码位于`secure_channel.py`文件。我们发送的信息有两种类型——消息（message）和文件（file）
 
 1. 消息（message）
 
@@ -140,3 +140,6 @@ crypto库 AES的CBC加密
 ![CBC加密](./Picture/CBC_encryption.svg.png)
 
 ![CBC解密](./Picture/CBC_decryption.svg.png)
+
+## 感谢
+我的加密协议和多线程框架学习自`@KevinWang15`学长的[代码](https://github.com/KevinWang15/network-pj-chatroom)，稍有改动，在此表达感谢！

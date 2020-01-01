@@ -135,7 +135,7 @@ class SecureChannel:
         return
 
     def recv_file(self, file_path):
-        """客户端从服务器获得名为filename的文件"""
+        """客户端从服务器接收文件"""
         message = self.recv_message()
         if message['type'] == MessageType.no_book:
             print('查无此书！')
